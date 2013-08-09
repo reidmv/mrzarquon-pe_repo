@@ -2,6 +2,8 @@ pe_repo
 
 This is the pe_repo module.
 
+This is meant to help you create a repo of PE packages on a console/master of your choice, making it easy to deploy agents via packages exclusively.
+
 License
 -------
 

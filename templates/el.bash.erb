@@ -1,0 +1,7 @@
+#!/bin/bash
+
+/usr/bin/curl http://<%= @package_mirror %>/el.repo > /etc/yum.repos.d/pe_repo.repo
+/usr/bin/yum install -y pe-puppet pe-facter pe-augeas pe-ruby-augeas pe-ruby-ldap pe-hiera pe-ruby-rgen pe-rubygem-net-ssh pe-rubygem-deep-merge pe-puppet-enterprise-release pe-libyaml pe-ruby pe-ruby-shadow pe-ruby-stomp pe-mcollective-common pe-mcollective
+/usr/bin/curl http://<%= @package_mirror %>/puppet.conf > /etc/puppetlabs/puppet/puppet.conf
+/usr/bin/curl http://<%= @package_mirror %>/pe_version > /opt/puppet/pe_version
+/opt/puppet/bin/puppet resource service pe-puppet ensure=running enable=true
