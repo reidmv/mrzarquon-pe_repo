@@ -37,7 +37,10 @@
 #
 class pe_repo (
   $puppet_master = $::fqdn,
-  $repo_versions = 'el-6-x86_64',
+  $repo_versions = [
+    'el-6-x86_64',
+    'ubuntu-12.04-i386',
+  ],
   $package_mirror = $::fqdn,
 ){
   
@@ -68,7 +71,7 @@ class pe_repo (
     content => template('pe_repo/elrepo.erb'),
   }
   file { '/opt/pe_repo/html/pe_version':
-    content => "{$pe_version}",
+    content => $pe_version,
   }
   file { '/opt/pe_repo/html/GPG-KEY-puppetlabs':
     source => "puppet:///modules/pe_repo/GPG-KEY-puppetlabs",
@@ -90,5 +93,4 @@ class pe_repo (
 
   #eventually this should be something fancy with create_resources and an array that you pass it of all the repos you want built
   pe_repo::repo {$repo_versions:}
-  pe_repo::repo {'ubuntu-12.04-i386':}
 }
