@@ -37,13 +37,18 @@
 #
 class pe_repo (
   $puppet_master = $::fqdn,
-  $repo_versions = [
+  $linux_repos = [
     'el-6-x86_64',
     'ubuntu-12.04-i386',
   ],
   $package_mirror = $::fqdn,
+  $enable_windows = false,
+  $enable_solaris = false,
+  $enable_aix = false,
+  $repo_port = 80,
+  $pe_version = $::pe_version
 ){
-  
+
   File {
     ensure => file,
     mode   => 644,
@@ -55,42 +60,86 @@ class pe_repo (
   file { '/opt/pe_repo': ensure => directory, }
   file { '/opt/pe_repo/html': ensure => directory, }
 
+  #our welcome page
   file { '/opt/pe_repo/html/index.html':
     content => template('pe_repo/index.erb'),
   }
+  # our curl pipe bash scripts
   file { '/opt/pe_repo/html/deb.bash':
     content => template('pe_repo/deb.bash.erb'),
   }
   file { '/opt/pe_repo/html/el.bash':
     content => template('pe_repo/el.bash.erb'),
   }
+  # our puppet.conf file
   file { '/opt/pe_repo/html/puppet.conf':
     content => template('pe_repo/puppet.conf.erb'),
   }
+  # our yum repo
   file { '/opt/pe_repo/html/el.repo':
     content => template('pe_repo/elrepo.erb'),
   }
+  # needed support files
   file { '/opt/pe_repo/html/pe_version':
     content => $pe_version,
   }
   file { '/opt/pe_repo/html/GPG-KEY-puppetlabs':
-    source => "puppet:///modules/pe_repo/GPG-KEY-puppetlabs",
+    source => 'puppet:///modules/pe_repo/GPG-KEY-puppetlabs',
   }
 
-  #enable port 80 and sharing the repo
+  # enable port and sharing the repo
   file { '/etc/puppetlabs/httpd/conf.d/pe_repo.conf':
-    source => 'puppet:///modules/pe_repo/pe_repo.conf',
-    notify => Service['pe-httpd'],
+    content => template('pe_repo/pe_repo.conf.erb'),
+    notify  => Service['pe-httpd'],
   }
 
-  #everyone gets windows because its easy and not stupid
-  exec { 'download_windows':
-    command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}.msi",
-    cwd     => '/opt/pe_repo/html/',
-    creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}.msi",
-    require => File['/opt/pe_repo/html'],
-  }
+  pe_repo::repo {$linux_repos:}
 
-  #eventually this should be something fancy with create_resources and an array that you pass it of all the repos you want built
-  pe_repo::repo {$repo_versions:}
+
+  #here is our non repo friendly distros
+  if $enable_windows == true {
+    exec { 'download_windows':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}.msi",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}.msi",
+      require => File['/opt/pe_repo/html'],
+    }
+  }
+  if $enable_solaris == true {
+    file { '/opt/pe_repo/html/solaris.bash':
+      content => template('pe_repo/solaris.bash.erb'),
+    }
+    exec { 'download_solaris_sparc':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}-solaris-10-sparc.tar.gz",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}-solaris-10-sparc.tar.gz",
+      require => File['/opt/pe_repo/html'],
+    }
+    exec { 'download_solaris_i386':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}-solaris-10-i386.tar.gz",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}-solaris-10-i386.tar.gz",
+      require => File['/opt/pe_repo/html'],
+    }
+  }
+  if $enable_aix == true {
+    exec { 'download_aix5':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}.msi",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}.msi",
+      require => File['/opt/pe_repo/html'],
+    }
+    exec { 'download_aix6':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}.msi",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}.msi",
+      require => File['/opt/pe_repo/html'],
+    }
+    exec { 'download_aix7':
+      command => "/usr/bin/curl -O http://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}.msi",
+      cwd     => '/opt/pe_repo/html/',
+      creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}.msi",
+      require => File['/opt/pe_repo/html'],
+    }
+  }
 }
