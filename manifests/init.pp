@@ -57,33 +57,33 @@ class pe_repo (
   }
 
   #build file structure
-  file { '/opt/pe_repo': ensure => directory, }
-  file { '/opt/pe_repo/html': ensure => directory, }
+  file { '/opt/puppet/pe_repo': ensure => directory, }
+  file { '/opt/puppet/pe_repo/html': ensure => directory, }
 
   #our welcome page
-  file { '/opt/pe_repo/html/index.html':
+  file { '/opt/puppet/pe_repo/html/index.html':
     content => template('pe_repo/index.erb'),
   }
   # our curl pipe bash scripts
-  file { '/opt/pe_repo/html/deb.bash':
+  file { '/opt/puppet/pe_repo/html/deb.bash':
     content => template('pe_repo/deb.bash.erb'),
   }
-  file { '/opt/pe_repo/html/el.bash':
+  file { '/opt/puppet/pe_repo/html/el.bash':
     content => template('pe_repo/el.bash.erb'),
   }
   # our puppet.conf file
-  file { '/opt/pe_repo/html/puppet.conf':
+  file { '/opt/puppet/pe_repo/html/puppet.conf':
     content => template('pe_repo/puppet.conf.erb'),
   }
   # our yum repo
-  file { '/opt/pe_repo/html/el.repo':
+  file { '/opt/puppet/pe_repo/html/el.repo':
     content => template('pe_repo/elrepo.erb'),
   }
   # needed support files
-  file { '/opt/pe_repo/html/pe_version':
+  file { '/opt/puppet/pe_repo/html/pe_version':
     content => $pe_version,
   }
-  file { '/opt/pe_repo/html/GPG-KEY-puppetlabs':
+  file { '/opt/puppet/pe_repo/html/GPG-KEY-puppetlabs':
     source => 'puppet:///modules/pe_repo/GPG-KEY-puppetlabs',
   }
 

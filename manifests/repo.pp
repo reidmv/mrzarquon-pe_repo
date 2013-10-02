@@ -9,17 +9,17 @@ define pe_repo::repo (
     source => "https://s3.amazonaws.com/pe-builds/released/${pe_version}/puppet-enterprise-${pe_version}-${installer_build}.tar.gz",
   }
   staging::extract { "puppet-enterprise-${pe_version}-${installer_build}.tar.gz":
-    target  => '/opt/pe_repo/html',
-    creates => "/opt/pe_repo/html/puppet-enterprise-${pe_version}-${installer_build}",
+    target  => '/opt/puppet/pe_repo/html',
+    creates => "/opt/puppet/pe_repo/html/puppet-enterprise-${pe_version}-${installer_build}",
     require => [
       Staging::File["puppet-enterprise-${pe_version}-${installer_build}.tar.gz"],
-      File['/opt/pe_repo/html']
+      File['/opt/puppet/pe_repo/html']
     ]
   }
   #our nice symlink to make the .repo files happy
-  file { "/opt/pe_repo/html/${installer_build}":
+  file { "/opt/puppet/pe_repo/html/${installer_build}":
     ensure  => link,
-    target  => "/opt/pe_repo/html/puppet-enterprise-${pe_version}-${installer_build}/packages/${installer_build}",
+    target  => "/opt/puppet/pe_repo/html/puppet-enterprise-${pe_version}-${installer_build}/packages/${installer_build}",
     require => Staging::Extract["puppet-enterprise-${pe_version}-${installer_build}.tar.gz"],
   }
 }
