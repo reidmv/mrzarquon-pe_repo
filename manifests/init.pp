@@ -40,13 +40,16 @@ class pe_repo (
   $linux_repos = [
     'el-6-x86_64',
     'ubuntu-12.04-i386',
+    'debian-7-amd64',
   ],
   $package_mirror = $::fqdn,
+  $enable_linux = true,
   $enable_windows = false,
   $enable_solaris = false,
   $enable_aix = false,
   $repo_port = 80,
-  $pe_version = $::pe_version
+  $pe_version = $::pe_version,
+  $install_httpd = false,
 ){
 
   File {
@@ -87,14 +90,24 @@ class pe_repo (
     source => 'puppet:///modules/pe_repo/GPG-KEY-puppetlabs',
   }
 
+  # if we want, we can install pe-httpd on a non master system
+  if $install_httpd == true {
+    package { 'pe-httpd':
+      ensure => installed,
+      before => File['/etc/puppetlabs/httpd/conf.d/pe_repo.conf'],
+    }
+  }
+
   # enable port and sharing the repo
   file { '/etc/puppetlabs/httpd/conf.d/pe_repo.conf':
     content => template('pe_repo/pe_repo.conf.erb'),
     notify  => Service['pe-httpd'],
   }
 
-  pe_repo::repo {$linux_repos:}
-
+  # This builds the repos, call with pe_repo with enable_linux=false if you want tuneable locations
+  if $enable_linux == true {
+    pe_repo::repo {$linux_repos:}
+  }
 
   #here is our non repo friendly distros
   if $enable_windows == true {
