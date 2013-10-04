@@ -15,11 +15,14 @@ How to start the service
 If you want, these commands can be piped into /bin/bash directly to execute the installation steps, however this is running arbitrary shell code you downloaded over the internet, so know your dealer.
 
 Simplest invocation:
+Sets up on the target system as an EL 6, Ubuntu 12 386, and Debian 7 64bit repository.
 
 ```puppet
 include pe_repo
 ```
-Sets up on the target system as an EL 6, Ubuntu 12 386, and Debian 7 64bit repository.
+Complicated setup:
+Setup a mirror of packages, but build the repos outside of the base invocation instead.
+Also, install pe-httpd, because this is running on an agent that has access to the repo.
 
 ```puppet
 class { 'pe_repo':
