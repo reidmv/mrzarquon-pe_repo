@@ -39,7 +39,6 @@ class pe_repo (
   $puppet_master = $::fqdn,
   $linux_repos = [
     'el-6-x86_64',
-    'ubuntu-12.04-i386',
     'debian-7-amd64',
   ],
   $package_mirror = $::fqdn,
