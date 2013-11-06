@@ -1,6 +1,6 @@
 define pe_repo::repo (
   $installer_build = $title,
-  $baseurl = 'https://s3.amazonaws.com/pe-builds/released/',
+  $baseurl = 'https://s3.amazonaws.com/pe-builds/released',
   $pe_version = $::pe_version,
 ){
   # right now this only stages the installers for the current version of the master
