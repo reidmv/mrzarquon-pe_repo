@@ -8,4 +8,4 @@ description 'UNKNOWN'
 project_page 'https://github.com/mrzarquon/puppet-pe_repo'
 
 ## Add dependencies, if any:
-dependency 'nanliu/staging', '>= 3.0.0'
+dependency 'nanliu/staging', '>= 0.3.1'
